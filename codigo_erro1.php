@@ -8,55 +8,71 @@ $database = "crud_aula";
 $conn = new mysqli($host, $user, $password, $database);
 
 if ($conn->connect_error) {
-die("Erro na conexao: " . $conn->connect_error);
+    die("Erro na conexao: " . $conn->connect_error);
 }
 
 // CADASTRAR
 if (isset($_POST['cadastrar'])) {
 
-$nome = $_POST[ 'nome' ];
-$email = $_POST['email'];
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
 
-$sql = "INSERT INTO usuarios (nome, email) VALUES (?, ?)";
-$stmt = $conn->prepare($sql);
+    $sql = "INSERT INTO usuarios (nome, email) VALUES (?, ?)";
+    $stmt = $conn->prepare($sql);
 
-$stmt->bind_param("ss", $nome, $email);
-$stmt->execute();
+    $stmt->bind_param("ss", $nome, $email);
+    $stmt->execute();
 
-header("Location: index.php");
-exit;
+    header("Location: index.php");
+    exit;
 }
 
 // EXCLUIR
 if (isset($_GET['excluir'])) {
 
-$id = $_GET['excluir'];
+    $id = filter_input(INPUT_GET, 'excluir', FILTER_VALIDATE_INT);
 
-$sql = "DELETE FROM usuarios WHERE id = ?";
-$stmt = $conn->prepare($sql);
+    if ($id) {
+        $sql = "DELETE FROM usuarios WHERE id = ?";
+        $stmt = $conn->prepare($sql);
 
-$stmt->bind_param("i", $id);
-$stmt->execute();
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+    }
 
-header("Location: index.php");
-exit:
+    header("Location: index.php");
+    exit;
 }
 
 // EDITAR
 if (isset($_POST['editar'])) {
 
-$id = $_POST['id'];
-$nome = $_POST[ 'nome' ];
-$email = $_POST['email'];
+    $id = $_POST['id'];
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
 
-$sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
-$stmt = $conn->prepare($sql);
+    $sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
 
-$stmt->bind_param( "ssi", $nome, $email, $id)
-$stmt->execute();
+    $stmt->bind_param("ssi", $nome, $email, $id);
+    $stmt->execute();
 
-header("Location: index.php");
-exit;
+    header("Location: index.php");
+    exit;
+}
+
+$usuarioEdicao = null;
+if (isset($_GET['editar'])) {
+
+    $idEdicao = filter_input(INPUT_GET, 'editar', FILTER_VALIDATE_INT);
+
+    if ($idEdicao) {
+        $sql = "SELECT id, nome, email FROM usuarios WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $idEdicao);
+        $stmt->execute();
+        $usuarioEdicao = $stmt->get_result()->fetch_assoc();
+    }
 }
 
 // BUSCAR USUÁRIOS
@@ -65,7 +81,7 @@ $resultado = $conn->query($sql);
 
 ?>
 
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -79,19 +95,29 @@ $resultado = $conn->query($sql);
 
 <form method="POST">
 
-<label>Nome :</label>
-<input type="text" name="nome" required>
+<?php if ($usuarioEdicao) { ?>
+<input type="hidden" name="id" value="<?= $usuarioEdicao['id'] ?>">
+<?php } ?>
+
+<label>Nome:</label>
+<input type="text" name="nome" value="<?= $usuarioEdicao ? htmlspecialchars($usuarioEdicao['nome']) : '' ?>" required>
 
 <br><br>
 
-<label>E-mail :</label>
-<input type="email" name="email" required>
+<label>E-mail:</label>
+<input type="email" name="email" value="<?= $usuarioEdicao ? htmlspecialchars($usuarioEdicao['email']) : '' ?>" required>
 
 <br><br>
 
+<?php if ($usuarioEdicao) { ?>
+<button type="submit" name="editar">
+Salvar edição
+</button>
+<?php } else { ?>
 <button type="submit" name="cadastrar">
 Cadastrar
 </button>
+<?php } ?>
 
 </form>
 
@@ -106,7 +132,7 @@ Cadastrar
 <th>Ações</th>
 </tr>
 
-<? php while ($usuario = $resultado->fetch_assoc()) { ?>
+<?php while ($usuario = $resultado->fetch_assoc()) { ?>
 
 <tr>
 
@@ -115,7 +141,7 @@ Cadastrar
 </td>
 
 <td>
-<?= $usuario['nome' ] ?>
+<?= $usuario['nome'] ?>
 </td>
 
 <td>
@@ -124,7 +150,12 @@ Cadastrar
 
 <td>
 
-<a href="index.php?excluir=<?= $usuario['id'] ?>">
+<a href="index.php?editar=<?= $usuario['id'] ?>">
+Editar
+</a>
+
+<a href="index.php?excluir=<?= $usuario['id'] ?>"
+   onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
 Excluir
 </a>
 
@@ -132,7 +163,7 @@ Excluir
 
 </tr>
 
-<? php } ?>
+<?php } ?>
 
 </table>
 
