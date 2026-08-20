@@ -1,4 +1,4 @@
-<? php
+<?php
 
 $host = "localhost";
 $user = "root";
@@ -8,7 +8,7 @@ $database = "crud_aula";
 $conn = new mysqli($host, $user, $password, $database);
 
 if ($conn->connect_error) {
-die("Erro na conexao: " . $conn->connect_error)
+die("Erro na conexao: " . $conn->connect_error);
 }
 
 // CADASTRAR
@@ -39,7 +39,7 @@ $stmt->bind_param("i", $id);
 $stmt->execute();
 
 header("Location: index.php");
-exit;
+exit:
 }
 
 // EDITAR
@@ -65,7 +65,7 @@ $resultado = $conn->query($sql);
 
 ?>
 
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -124,7 +124,7 @@ Cadastrar
 
 <td>
 
-<a href="index.php?excluir =<?= $usuario['id'] ?>">
+<a href="index.php?excluir=<?= $usuario['id'] ?>">
 Excluir
 </a>
 

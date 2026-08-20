@@ -8,16 +8,31 @@
 Correção: todas as tags foram ajustadas para o formato correto.
 
 
+[Evidência tag php](evidencias/tag-php.png)
+
 
 ### Erro 2 de sintaxe: 
 Faltavam pontos e vírgulas em certos comandos , como `die(...)`, `bind_param(...)`, `exit` e a query de busca.
 
 Correção: todos os comandos foram finalizados corretamente com `;`.
 
+[Evidência die](evidencias/die.png)
+
+[Evidência bind_param](evidencias/stmt.png)
+
+[Evidência exit](evidencias/exit.png)
+
+
+
 ### Erro 3 de sintaxe: 
 O HTML estava com marcação quebrada, como `<! DOCTYPE html>` e `<label>Nome :< /label>`, além do link de excluir com espaço no parâmetro.
 
 Correção: a estrutura HTML foi ajustada e o link passou a ficar em `index.php?excluir=ID` ao invés de `index.php?excluir =ID`.
+
+[Evidência Tag DOCTYPE](evidencias/tag-doctype.png)
+[Evidência Label](evidencias/label.png)
+[Evidência Tag Excluir](evidencias/tag-excluir.png)
+
 
 ### Falha de segurança: 
 
@@ -25,12 +40,21 @@ A exclusão era feita por `$_GET`, sem validação e sem confirmação do usuár
 
 Correção: foi feita validação do ID com `FILTER_VALIDATE_INT` e adicionado `confirm()` antes da exclusão.
 
+[Evidência Get](evidencias/get.png)
+
+
 
 ### Funcionalidade a ser validada
 
 Também foi ajustada a funcionalidade de edição, que antes existia sem fluxo completo. Agora o arquivo carrega o registro para edição, salva o novo nome e e-mail e retorna para a listagem.
 
+[Evidência Editar](funcao_editar/get.png)
+
+
 ## Prepared Statements
-Prepared Statements foram usados em INSERT, UPDATE e DELETE para evitar SQL Injection. O banco recebe os valores separados do comando SQL, o que é o padrão seguro do PHP.
+Prepared Statements foram usados em Inserir, Atualizar e Deletar para evitar SQL Injection. O banco recebe os valores separados do comando SQL, o que é o padrão seguro do PHP.
+
+[Evidência Prepared Statements](prepared-statements/get.png)
+
 
 
